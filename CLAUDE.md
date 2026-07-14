@@ -58,6 +58,16 @@ docs/strategy_sns.mdのWordPress戦略を実行する別ライン。プロンプ
 - data/    : 楽天アフィリエイトレポートCSV置き場
 - output/  : 分析レポート等の成果物
 - output/articles/ : 記事制作チームの成果物(1記事1フォルダ、01〜05を保存)
+- scripts/rakuten_search.py : 楽天ウェブサービスAPIで実商品データ(価格・レビュー件数・評価・アフィリエイトリンク)を取得するツール(下記参照)
+- .env(git管理外) : 楽天ウェブサービスAPIの認証情報
+
+## 楽天ウェブサービスAPI連携(2026年7月15日セットアップ)
+①リサーチAI(および記事制作チーム蒐)は、Web検索での近似ではなく `scripts/rakuten_search.py` で実際のレビュー件数・評価・価格を取得できる。
+- 認証情報は `.env` に保存済み(RAKUTEN_APPLICATION_ID / RAKUTEN_ACCESS_KEY / RAKUTEN_AFFILIATE_ID)。**絶対にgitにコミットしない**(.gitignore登録済み)
+- エンドポイントは2026年2月の新API(openapi.rakuten.co.jp/ichibams/api)。旧API(app.rakuten.co.jp)は2026年5月14日で完全停止済みのため使用不可
+- 使い方: `python3 scripts/rakuten_search.py "キーワード" --min-reviews 100 --min-rating 4.3 --min-price 3000 --max-price 15000`
+- 取得した`itemUrl`はアフィリエイトID組み込み済みなので、そのままROOM投稿・直リンクどちらにも使える
+- IPアドレス制限を設定した場合、回線のIPが変わるとAPIエラーになることがある。その際は現在のIPを再確認して楽天ウェブサービスの管理画面で更新する
 
 ## 作業スタイル
 - 出力は即使える完成形で(概念説明より実行可能なテンプレート優先)
