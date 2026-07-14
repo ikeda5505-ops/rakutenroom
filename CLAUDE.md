@@ -1,4 +1,13 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 # 楽天ROOM収益化プロジェクト
+
+## リポジトリの技術的な性質
+- ビルド/lint/テストの類は存在しない。このリポジトリは「Markdownプロンプトテンプレート」+「そこから生成されたコンテンツ」を管理するだけの純粋なコンテンツ運用リポジトリ
+- 唯一のコードは `assets/make_brand.py`(Python + Pillow でブランドアイコン/ヘッダー画像を生成)。依存関係を宣言する requirements.txt 等はない。ローカルで動かす場合は `pip install pillow` に加え、スクリプトがハードコードしている `/usr/share/fonts/opentype/noto/NotoSerifCJK-Bold.ttc` 等のNoto CJKフォントパスが必要。出力先も `/home/claude/room_icon.png` 等にハードコードされているため、リポジトリ内で再生成する際は保存先パスを `assets/room_icon.png` / `assets/room_header.png` に書き換えてから実行すること
+- 「実行」とは常に「このリポジトリのMarkdownプロンプト(prompts/配下)をチャット上でAIに演じさせ、その場でテキスト成果物を生成すること」を指す。ここにAPI呼び出しや自動投稿を行うプログラムは存在しないし、作ってはいけない(下記コンプライアンスルール1)
 
 ## プロジェクト概要
 - オーナー: Masatsugu
@@ -49,15 +58,15 @@ docs/strategy_sns.mdのWordPress戦略を実行する別ライン。プロンプ
 - 3ヶ月目標: 月1,500〜2,000クリック(Aランク圏)
 - ランクボーナス: B+1% / A+2% / S+3%(1商品上限1,000円)
 
-## ディレクトリ
-- prompts/                : ROOM運用5役のプロンプトテンプレート
-- prompts/team_articles/  : 記事制作チーム5名のプロンプトテンプレート
-- docs/    : 初心者マニュアル、プロフィール設計、戦略メモ(docs/getting_started.md = はじめての登録・準備の完全手順)
-- content/ : 生成した投稿文(週別)。ファイル名: posts_YYYY-MM-DD.md
-- assets/  : アイコン/ヘッダー等のブランド画像
-- data/    : 楽天アフィリエイトレポートCSV置き場
-- output/  : 分析レポート等の成果物
-- output/articles/ : 記事制作チームの成果物(1記事1フォルダ、01〜05を保存)
+## ディレクトリとファイル命名規則(実例)
+- prompts/                : ROOM運用5役のプロンプトテンプレート(01_research.md〜05_analytics.md)
+- prompts/team_articles/  : 記事制作チーム5名のプロンプトテンプレート(00_team_overview.md + 01_research.md〜05_marketing.md)
+- docs/    : 初心者マニュアル(getting_started.md=完全手順、manual.md=要点版)、profile.md(プロフィール文確定版)、strategy_sns.md(外部SNS戦略)
+- content/ : ②が生成した投稿文ストック(週別)。ファイル名 `posts_YYYY-MM-DD.md`(例: content/posts_2026-07-14.md)。週の起点日でファイルを分け、1商品につきA/B(/C)複数パターンをまとめて1ファイルに保存
+- assets/  : ブランド画像(room_icon.png/room_header.png)、design_philosophy.md(ビジュアルコンセプト文)、make_brand.py(生成スクリプト)
+- data/    : 楽天アフィリエイトレポートCSV置き場(README.mdのみ、CSV自体は都度手動配置)
+- output/  : ①④⑤の成果物。ファイル名は `weekly_research_YYYY-MM-DD.md`(①の商品10選)、`calendar_YYYY-MM-DD_week.md`(④の週間カレンダー)など、担当AIと対象週が分かる名前にする
+- output/articles/ : 記事制作チームの成果物。1記事1フォルダ `output/articles/YYYY-MM-DD_テーマ名/` に `01_research.md` `02_plan.md` `03_draft.md` `04_final.md` `05_sns.md` を保存(ファイル名は工程を表す名詞に変わる点に注意。プロンプトファイル名の `01_research.md`〜`05_marketing.md` とは対応するが同名ではない)
 
 ## 作業スタイル
 - 出力は即使える完成形で(概念説明より実行可能なテンプレート優先)
