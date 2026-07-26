@@ -6,9 +6,27 @@
 import argparse
 import os
 import sys
+import time
 import urllib.parse
 import urllib.request
 import json
+
+_STATE_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".last_call")
+
+def _throttle(min_interval=1.2):
+    """楽天APIのレート制限(1秒1回)を守るため、前回呼び出しから最低min_interval秒空ける。"""
+    now = time.time()
+    last = 0.0
+    if os.path.exists(_STATE_FILE):
+        try:
+            last = float(open(_STATE_FILE).read().strip())
+        except (ValueError, OSError):
+            pass
+    wait = min_interval - (now - last)
+    if wait > 0:
+        time.sleep(wait)
+    with open(_STATE_FILE, "w") as f:
+        f.write(str(time.time()))
 
 def load_env(path=".env"):
     env = {}
@@ -22,6 +40,7 @@ def load_env(path=".env"):
     return env
 
 def search(keyword, min_reviews=100, min_rating=4.3, max_price=None, min_price=None, hits=10, referer="https://github.com/ikeda5505-ops/rakutenroom"):
+    _throttle()
     env = load_env()
     app_id = env.get("RAKUTEN_APPLICATION_ID") or os.environ.get("RAKUTEN_APPLICATION_ID")
     access_key = env.get("RAKUTEN_ACCESS_KEY") or os.environ.get("RAKUTEN_ACCESS_KEY")
